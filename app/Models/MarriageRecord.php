@@ -18,19 +18,19 @@ class MarriageRecord extends Model
 
         // Husband's Details
         'husband_name',
-        'dob_husband',
-        'place_of_birth_husband',
-        'nationality_husband',
-        'father_husband', // Added
-        'mother_husband', // Added
+        'age_husband', // Added
+        'father_husband',
+        'father_nationality_husband', // Added
+        'mother_husband',
+        'mother_nationality_husband', // Added
 
         // Wife's Details
         'wife_name',
-        'dob_wife',
-        'place_of_birth_wife',
-        'nationality_wife',
-        'father_wife', // Added
-        'mother_wife', // Added
+        'age_wife', // Added
+        'father_wife',
+        'father_nationality_wife', // Added
+        'mother_wife',
+        'mother_nationality_wife', // Added
 
         // Marriage Event
         'place_of_marriage',

@@ -10,16 +10,20 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
 */
 
+// Marriage Specific Custom Routes
+// (Keep these ABOVE the resource route to avoid 404/ID conflicts)
+Route::get('/marriages/export-pdf', [MarriageRecordController::class, 'exportPDF'])->name('marriages.pdf');
+Route::get('/marriages/{id}/pdf', [MarriageRecordController::class, 'generateSinglePdf'])->name('marriages.single_pdf');
+Route::get('/marriages/{id}/generate-docx', [MarriageRecordController::class, 'generateDocx'])->name('marriages.docx');
+
+// Standard Resource Routes
 Route::resource('births', BirthRecordController::class);
 Route::resource('marriages', MarriageRecordController::class);
 Route::resource('deaths', DeathRecordController::class);
+
+// Dashboard and Home
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/', function () {
     return view('welcome');
