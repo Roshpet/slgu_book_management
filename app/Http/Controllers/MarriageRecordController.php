@@ -20,7 +20,10 @@ class MarriageRecordController extends Controller
             return $query->where('husband_name', 'like', "%{$search}%")
                          ->orWhere('wife_name', 'like', "%{$search}%")
                          ->orWhere('registration_number', 'like', "%{$search}%")
-                         ->orWhere('place_of_marriage', 'like', "%{$search}%");
+                         ->orWhere('place_of_marriage', 'like', "%{$search}%")
+                         // Advanced Search: Allows "March 2026" or "2026"
+                         ->orWhereRaw("DATE_FORMAT(date_of_registration, '%M %Y') like ?", ["%{$search}%"])
+                         ->orWhereRaw("DATE_FORMAT(date_of_registration, '%Y') = ?", [$search]);
         })->latest()->get();
 
         return view('marriages.index', compact('marriages'));
@@ -53,12 +56,14 @@ class MarriageRecordController extends Controller
             'date_of_registration'       => 'required|date|after_or_equal:date_of_marriage',
             'husband_name'               => 'required|string',
             'age_husband'                => 'required|numeric',
+            'nationality_husband'        => 'required|string',
             'father_husband'             => 'required|string',
             'father_nationality_husband' => 'required|string',
             'mother_husband'             => 'required|string',
             'mother_nationality_husband' => 'required|string',
             'wife_name'                  => 'required|string',
             'age_wife'                   => 'required|numeric',
+            'nationality_wife'           => 'required|string',
             'father_wife'                => 'required|string',
             'father_nationality_wife'    => 'required|string',
             'mother_wife'                => 'required|string',
@@ -82,16 +87,22 @@ class MarriageRecordController extends Controller
     {
         $search = $request->input('search');
 
+        // Logic here matches the index search so the PDF filters exactly what you see
         $marriages = MarriageRecord::when($search, function ($query, $search) {
             return $query->where('husband_name', 'like', "%{$search}%")
                          ->orWhere('wife_name', 'like', "%{$search}%")
-                         ->orWhere('registration_number', 'like', "%{$search}%");
+                         ->orWhere('registration_number', 'like', "%{$search}%")
+                         ->orWhereRaw("DATE_FORMAT(date_of_registration, '%M %Y') like ?", ["%{$search}%"])
+                         ->orWhereRaw("DATE_FORMAT(date_of_registration, '%Y') = ?", [$search]);
         })->latest()->get();
 
         $pdf = Pdf::loadView('marriages.pdf', compact('marriages'))
                   ->setPaper([0, 0, 612, 936], 'landscape');
 
-        return $pdf->download('Marriage_Records_Report.pdf');
+        // Dynamically name the file based on the search month/year
+        $filename = $search ? 'Marriage_Records_' . str_replace(' ', '_', $search) . '.pdf' : 'Marriage_Records_Report.pdf';
+
+        return $pdf->download($filename);
     }
 
     /**
@@ -103,7 +114,7 @@ class MarriageRecordController extends Controller
 
         $details = [
             'issued_to'    => $request->query('issued_to', '________________'),
-            'gender_ref'   => $request->query('gender_ref', 'her'), // New: captured from modal dropdown
+            'gender_ref'   => $request->query('gender_ref', 'her'),
             'or_number'    => $request->query('or_number', '________________'),
             'amount_paid'  => $request->query('amount_paid', '________________'),
             'current_date' => now()->format('F d, Y'),
@@ -124,7 +135,7 @@ class MarriageRecordController extends Controller
         $marriage = MarriageRecord::findOrFail($id);
 
         $issuedTo = $request->query('issued_to', '________________');
-        $genderRef = $request->query('gender_ref', 'her'); // New: captured from modal dropdown
+        $genderRef = $request->query('gender_ref', 'her');
         $orNumber = $request->query('or_number', '________________');
         $amountPaid = $request->query('amount_paid', '________________');
 
@@ -142,18 +153,26 @@ class MarriageRecordController extends Controller
         // Database mappings
         $templateProcessor->setValue('page_number', $marriage->page_number);
         $templateProcessor->setValue('book_number', $marriage->book_number);
+
+        // Husband Details
         $templateProcessor->setValue('husband_name', strtoupper($marriage->husband_name));
         $templateProcessor->setValue('age_husband', $marriage->age_husband);
+        $templateProcessor->setValue('nationality_husband', strtoupper($marriage->nationality_husband));
         $templateProcessor->setValue('father_husband', strtoupper($marriage->father_husband));
         $templateProcessor->setValue('father_nationality_husband', $marriage->father_nationality_husband);
         $templateProcessor->setValue('mother_husband', strtoupper($marriage->mother_husband));
         $templateProcessor->setValue('mother_nationality_husband', $marriage->mother_nationality_husband);
+
+        // Wife Details
         $templateProcessor->setValue('wife_name', strtoupper($marriage->wife_name));
         $templateProcessor->setValue('age_wife', $marriage->age_wife);
+        $templateProcessor->setValue('nationality_wife', strtoupper($marriage->nationality_wife));
         $templateProcessor->setValue('father_wife', strtoupper($marriage->father_wife));
         $templateProcessor->setValue('father_nationality_wife', $marriage->father_nationality_wife);
         $templateProcessor->setValue('mother_wife', strtoupper($marriage->mother_wife));
         $templateProcessor->setValue('mother_nationality_wife', $marriage->mother_nationality_wife);
+
+        // Registration Details
         $templateProcessor->setValue('registration_number', $marriage->registration_number);
         $templateProcessor->setValue('date_of_registration', \Carbon\Carbon::parse($marriage->date_of_registration)->format('F d, Y'));
         $templateProcessor->setValue('date_of_marriage', \Carbon\Carbon::parse($marriage->date_of_marriage)->format('F d, Y'));
@@ -161,7 +180,7 @@ class MarriageRecordController extends Controller
 
         // Modal and Date mappings
         $templateProcessor->setValue('issued_to', strtoupper($issuedTo));
-        $templateProcessor->setValue('gender_ref', $genderRef); // Use ${gender_ref} in your Word template
+        $templateProcessor->setValue('gender_ref', $genderRef);
         $templateProcessor->setValue('or_number', $orNumber);
         $templateProcessor->setValue('amount_paid', $amountPaid);
         $templateProcessor->setValue('current_date', $currentDate);

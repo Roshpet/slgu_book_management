@@ -52,9 +52,15 @@
                             <label class="form-label">Full Name</label>
                             <input type="text" name="husband_name" class="form-control" value="{{ old('husband_name') }}" required>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Age</label>
-                            <input type="number" name="age_husband" class="form-control" value="{{ old('age_husband') }}" required>
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Age</label>
+                                <input type="number" name="age_husband" class="form-control" value="{{ old('age_husband') }}" required>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label">Nationality</label>
+                                <input type="text" name="nationality_husband" class="form-control" value="{{ old('nationality_husband', 'Filipino') }}" required>
+                            </div>
                         </div>
 
                         <div class="row g-2 mb-3">
@@ -85,9 +91,15 @@
                             <label class="form-label">Full Name</label>
                             <input type="text" name="wife_name" class="form-control" value="{{ old('wife_name') }}" required>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Age</label>
-                            <input type="number" name="age_wife" class="form-control" value="{{ old('age_wife') }}" required>
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Age</label>
+                                <input type="number" name="age_wife" class="form-control" value="{{ old('age_wife') }}" required>
+                            </div>
+                            <div class="col-md-8">
+                                <label class="form-label">Nationality</label>
+                                <input type="text" name="nationality_wife" class="form-control" value="{{ old('nationality_wife', 'Filipino') }}" required>
+                            </div>
                         </div>
 
                         <div class="row g-2 mb-3">

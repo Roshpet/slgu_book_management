@@ -18,22 +18,33 @@ class MarriageRecord extends Model
 
         // Husband's Details
         'husband_name',
-        'age_husband', // Added
+        'age_husband',
+        'nationality_husband',        // Newly Added
         'father_husband',
-        'father_nationality_husband', // Added
+        'father_nationality_husband',
         'mother_husband',
-        'mother_nationality_husband', // Added
+        'mother_nationality_husband',
 
         // Wife's Details
         'wife_name',
-        'age_wife', // Added
+        'age_wife',
+        'nationality_wife',          // Newly Added
         'father_wife',
-        'father_nationality_wife', // Added
+        'father_nationality_wife',
         'mother_wife',
-        'mother_nationality_wife', // Added
+        'mother_nationality_wife',
 
         // Marriage Event
         'place_of_marriage',
         'date_of_marriage'
+    ];
+
+    /**
+     * Optional: Cast dates to Carbon instances if you want to
+     * use format() directly on the model attributes.
+     */
+    protected $casts = [
+        'date_of_registration' => 'date',
+        'date_of_marriage' => 'date',
     ];
 }

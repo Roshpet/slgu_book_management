@@ -13,10 +13,14 @@ use Illuminate\Support\Facades\Route;
 */
 
 // Marriage Specific Custom Routes
-// (Keep these ABOVE the resource route to avoid 404/ID conflicts)
 Route::get('/marriages/export-pdf', [MarriageRecordController::class, 'exportPDF'])->name('marriages.pdf');
 Route::get('/marriages/{id}/pdf', [MarriageRecordController::class, 'generateSinglePdf'])->name('marriages.single_pdf');
 Route::get('/marriages/{id}/generate-docx', [MarriageRecordController::class, 'generateDocx'])->name('marriages.docx');
+
+// Death Specific Custom Routes (Fixes RouteNotFoundException)
+Route::get('/deaths/export-pdf', [DeathRecordController::class, 'exportPDF'])->name('deaths.pdf');
+Route::get('/deaths/{id}/pdf', [DeathRecordController::class, 'generateSinglePdf'])->name('deaths.single_pdf');
+Route::get('/deaths/{id}/generate-docx', [DeathRecordController::class, 'generateDocx'])->name('deaths.docx');
 
 // Standard Resource Routes
 Route::resource('births', BirthRecordController::class);

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <style>
+        /* PDF Page Setup - Folio/Legal standard */
         @page {
             margin: 0.4in 0.5in;
         }
@@ -14,6 +15,7 @@
             color: #000;
         }
 
+        /* Background Watermark */
         #watermark {
             position: fixed;
             top: 22%;
@@ -23,6 +25,7 @@
             z-index: -1000;
         }
 
+        /* LCR Form No. 2A */
         .lcr-form {
             position: absolute;
             top: -10px;
@@ -61,34 +64,31 @@
             text-align: justify;
         }
 
-        /* TIGHTER DATA ALIGNMENT - Fixes the large gap */
+        /* TIGHT DATA ALIGNMENT - Matching your provided image */
         .info-table {
             width: 100%;
             border: none;
             border-collapse: collapse;
+            margin-left: 5px;
         }
         .info-table td { padding: 1px 0; vertical-align: top; }
 
-        /* Adjusted width from 185px to 100px to bring data closer */
-        .label { width: 100px; font-weight: bold; }
+        /* Specific widths to eliminate the large gap */
+        .label { width: 175px; font-weight: bold; }
         .separator { width: 20px; text-align: center; }
-        .value { width: 260px; text-transform: uppercase; }
-
-        /* Registry details section */
-        .registry-section { margin-top: 0px; }
-        .reg-label { width: 80px; font-weight: bold; }
+        .value { text-transform: uppercase; }
 
         .issuance-text { margin-top: 35px; margin-bottom: 25px; }
 
         .footer-table {
             width: 100%;
-            margin-top: 55px;
+            margin-top: 60px;
             text-align: center;
         }
         .sig-name { font-weight: bold; text-decoration: underline; text-transform: uppercase; }
         .sig-title { font-size: 13px; font-weight: bold; display: block; }
 
-        .payment-section { margin-top: 60px; font-size: 14px; font-weight: bold; }
+        .payment-section { margin-top: 65px; font-size: 14px; font-weight: bold; }
         .stamp-tax-text { text-align: center; line-height: 1.1; font-size: 13px; }
         .note-text { font-style: italic; font-size: 11px; margin-top: 45px; }
     </style>
@@ -99,7 +99,7 @@
         <img src="{{ public_path('images/sogod_seal.jpg') }}" style="width: 100%;">
     </div>
 
-    <div class="lcr-form">LCR Form No. 3A<br>(Marriage-available)</div>
+    <div class="lcr-form">LCR Form No. 2A<br>(Marriage-available)</div>
 
     <table class="header-table">
         <tr>
@@ -119,48 +119,61 @@
     <div class="main-content">
         <p class="to-whom">TO WHOM IT MAY CONCERN:</p>
         <p class="cert-text">
-            We certify that among others, the following facts of marriage appear in our Register of Marriage on page {{ $marriage->page_number }} of book number {{ $marriage->book_number }}.
+            We certify that among others, the following facts of Death appear in our Register of Death on page {{ $death->page_number }} of book number {{ $death->book_number }}.
         </p>
 
         <table class="info-table">
             <tr>
-                <td class="label">Name</td><td class="separator">:</td><td class="value">{{ $marriage->husband_name }}</td>
-                <td class="separator">:</td><td class="value">{{ $marriage->wife_name }}</td>
+                <td class="label">MCR Registry Number</td>
+                <td class="separator">:</td>
+                <td class="value">{{ $death->registration_number }}</td>
             </tr>
             <tr>
-                <td class="label">Age</td><td class="separator">:</td><td class="value">{{ $marriage->age_husband }}</td>
-                <td class="separator">:</td><td class="value">{{ $marriage->age_wife }}</td>
+                <td class="label">Date Registration</td>
+                <td class="separator">:</td>
+                <td class="value">{{ \Carbon\Carbon::parse($death->date_of_registration)->format('F d, Y') }}</td>
             </tr>
             <tr>
-                <td class="label">Nationality</td><td class="separator">:</td><td class="value">{{ $marriage->nationality_husband }}</td>
-                <td class="separator">:</td><td class="value">{{ $marriage->nationality_wife }}</td>
+                <td class="label">Name</td>
+                <td class="separator">:</td>
+                <td class="value">{{ $death->full_name }}</td>
             </tr>
             <tr>
-                <td class="label">Mother</td><td class="separator">:</td><td class="value">{{ $marriage->mother_husband }}</td>
-                <td class="separator">:</td><td class="value">{{ $marriage->mother_wife }}</td>
+                <td class="label">Sex</td>
+                <td class="separator">:</td>
+                <td class="value">{{ $death->sex ?? 'N/A' }}</td>
             </tr>
             <tr>
-                <td class="label">Nationality</td><td class="separator">:</td><td class="value">{{ $marriage->mother_nationality_husband }}</td>
-                <td class="separator">:</td><td class="value">{{ $marriage->mother_nationality_wife }}</td>
+                <td class="label">Age</td>
+                <td class="separator">:</td>
+                <td class="value">{{ $death->age }}</td>
             </tr>
             <tr>
-                <td class="label">Father</td><td class="separator">:</td><td class="value">{{ $marriage->father_husband }}</td>
-                <td class="separator">:</td><td class="value">{{ $marriage->father_wife }}</td>
+                <td class="label">Civil Status</td>
+                <td class="separator">:</td>
+                <td class="value">{{ $death->civil_status }}</td>
             </tr>
             <tr>
-                <td class="label">Nationality</td><td class="separator">:</td><td class="value">{{ $marriage->father_nationality_husband }}</td>
-                <td class="separator">:</td><td class="value">{{ $marriage->father_nationality_wife }}</td>
+                <td class="label">Nationality</td>
+                <td class="separator">:</td>
+                <td class="value">FILIPINO</td>
+            </tr>
+            <tr>
+                <td class="label">Date of Death</td>
+                <td class="separator">:</td>
+                <td class="value">{{ \Carbon\Carbon::parse($death->date_of_death)->format('F d, Y') }}</td>
+            </tr>
+            <tr>
+                <td class="label">Place of Death</td>
+                <td class="separator">:</td>
+                <td class="value">{{ strtoupper($death->place_of_death) }}</td>
+            </tr>
+            <tr>
+                <td class="label">Cause of Death</td>
+                <td class="separator">:</td>
+                <td class="value">{{ strtoupper($death->cause_of_death) }}</td>
             </tr>
         </table>
-
-        <div class="registry-section">
-            <table class="info-table">
-                <tr><td class="reg-label">Local Registry Number</td><td class="separator">:</td><td class="value">{{ $marriage->registration_number }}</td></tr>
-                <tr><td class="reg-label">Date of Registration</td><td class="separator">:</td><td class="value">{{ \Carbon\Carbon::parse($marriage->date_of_registration)->format('F d, Y') }}</td></tr>
-                <tr><td class="reg-label">Date of Marriage</td><td class="separator">:</td><td class="value">{{ \Carbon\Carbon::parse($marriage->date_of_marriage)->format('F d, Y') }}</td></tr>
-                <tr><td class="reg-label">Place of Marriage</td><td class="separator">:</td><td class="value">{{ strtoupper($marriage->place_of_marriage) }}</td></tr>
-            </table>
-        </div>
 
         <p class="issuance-text">
             This certification is issued to <strong>{{ strtoupper($details['issued_to']) }}</strong> upon {{ $details['gender_ref'] }} request.
@@ -191,7 +204,7 @@
                     </td>
                     <td width="52%" class="stamp-tax-text">
                         "DOCUMENTARY STAMP TAX PAID"<br>
-                        <div style="font-size: 15px; margin-top: 5px; margin-left: -10px;">{{ $details['or_number'] }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ $details['date_paid'] }}</div>
+                        <div style="font-size: 15px; margin-top: 5px;">{{ $details['or_number'] }} &nbsp;&nbsp;&nbsp; {{ $details['date_paid'] }}</div>
                         <div style="font-size: 11px;">(GOR SERIAL NUMBER) &nbsp;&nbsp; (DATE OF PAYMENT)</div>
                     </td>
                 </tr>

@@ -9,8 +9,8 @@
             <div class="d-flex gap-2">
                 <form action="{{ route('marriages.index') }}" method="GET" class="d-flex gap-1">
                     <input type="text" name="search" class="form-control form-control-sm"
-                           placeholder="Search name or Reg No..."
-                           value="{{ request('search') }}" style="width: 200px;">
+                           placeholder="Search name, Reg No, or Month Year..."
+                           value="{{ request('search') }}" style="width: 250px;">
                     <button class="btn btn-light btn-sm fw-bold" type="submit">Search</button>
                     @if(request('search'))
                         <a href="{{ route('marriages.index') }}" class="btn btn-secondary btn-sm text-white">Clear</a>
@@ -18,6 +18,7 @@
                 </form>
 
                 <a href="{{ route('marriages.pdf', ['search' => request('search')]) }}" class="btn btn-danger btn-sm fw-bold">Export PDF</a>
+
                 <a href="{{ route('marriages.create') }}" class="btn btn-light btn-sm fw-bold">Add New Record</a>
             </div>
         </div>
@@ -82,7 +83,7 @@
                                                     <div class="input-group">
                                                         <input type="text" name="issued_to" class="form-control" placeholder="e.g. RAMELA A. BERANGEL" required style="flex: 3;">
                                                         <select name="gender_ref" class="form-select" style="flex: 1;" required>
-                                                            <option selected></option>
+                                                            <option selected disabled value="">Gender</option>
                                                             <option value="his">his</option>
                                                             <option value="her">her</option>
                                                         </select>
@@ -130,10 +131,9 @@
 <script>
     function setPrintTarget(id, type) {
         const form = document.getElementById('printForm' + id);
-        const timestamp = new Date().getTime(); // Prevent 404/Cache issues
+        const timestamp = new Date().getTime();
 
         if (type === 'pdf') {
-            // Include timestamp as a query parameter to force fresh generation
             let url = "{{ route('marriages.single_pdf', ':id') }}?t=" + timestamp;
             form.action = url.replace(':id', id);
             form.target = "_blank";
