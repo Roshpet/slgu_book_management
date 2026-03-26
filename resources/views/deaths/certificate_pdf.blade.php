@@ -99,7 +99,7 @@
         <img src="{{ public_path('images/sogod_seal.jpg') }}" style="width: 100%;">
     </div>
 
-    <div class="lcr-form">LCR Form No. 2A<br>(Marriage-available)</div>
+    <div class="lcr-form">LCR Form No. 2A<br>(Death-available)</div>
 
     <table class="header-table">
         <tr>

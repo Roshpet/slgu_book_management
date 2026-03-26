@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Marriage Records Report</title>
+    <title>Birth Records Report</title>
     <style>
         /* PDF Page Setup - Legal standard, Landscape */
         @page {
@@ -12,7 +12,7 @@
 
         body {
             font-family: 'Helvetica', Arial, sans-serif;
-            font-size: 11px;
+            font-size: 11px; /* Slightly smaller for better fit with row numbers */
             line-height: 1.3;
             color: #000;
             position: relative;
@@ -23,26 +23,22 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%); /* Ensures it centers regardless of image size */
             width: 450px;
             opacity: 0.1;
             z-index: -1000;
         }
 
-        /* Header Styling */
         .header-section {
             text-align: center;
             margin-bottom: 20px;
         }
         .header-section p { margin: 2px 0; }
-        .office-title { font-weight: bold; font-size: 15px; text-transform: uppercase; }
+        .office-title { font-weight: bold; font-size: 15px; }
 
-        /* Report Title Container */
         .report-title-container {
             text-align: center;
             margin-bottom: 20px;
-            border-top: 2px solid #000;
-            padding-top: 10px;
         }
         .report-title-container p {
             margin: 0;
@@ -51,7 +47,6 @@
             font-size: 13px;
         }
 
-        /* Table Styling */
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -72,7 +67,6 @@
             padding: 6px;
             border: 1px solid #ddd;
             text-transform: uppercase;
-            vertical-align: middle;
         }
 
         /* Specific width for row number */
@@ -83,8 +77,6 @@
         }
 
         .data-table tr:nth-child(even) { background-color: #f9f9f9; }
-
-        .fw-bold { font-weight: bold; }
 
         .footer-note {
             margin-top: 20px;
@@ -107,7 +99,7 @@
     </div>
 
     <div class="report-title-container">
-        <p>MARRIAGE RECORDS REPORT</p>
+        <p>BIRTH RECORDS REPORT</p>
         @if(request('search'))
             <p style="font-size: 11px; font-weight: normal; text-transform: none; color: #555;">Filtered by: "{{ request('search') }}"</p>
         @endif
@@ -117,33 +109,30 @@
         <thead>
             <tr>
                 <th class="col-no">#</th>
-                <th style="width: 85px;">Reg. Date</th>
+                <th style="width: 80px;">Reg. Date</th>
                 <th style="width: 80px;">Reg. No.</th>
-                <th>Husband's Name</th>
-                <th>Wife's Name</th>
-                <th style="width: 85px;">Marriage Date</th>
-                <th style="width: 70px;">Status</th>
+                <th>Child's Full Name</th>
+                <th style="width: 60px;">Sex</th>
+                <th style="width: 80px;">Nationality</th>
+                <th style="width: 80px;">Date of Birth</th>
+                <th>Place of Birth</th>
             </tr>
         </thead>
         <tbody>
-            @forelse($marriages as $marriage)
+            @forelse($births as $birth)
                 <tr>
                     <td class="col-no">{{ $loop->iteration }}</td>
-                    <td>{{ \Carbon\Carbon::parse($marriage->date_of_registration)->format('M d, Y') }}</td>
-                    <td class="fw-bold">{{ $marriage->registration_number }}</td>
-                    <td>{{ strtoupper($marriage->husband_name) }}</td>
-                    <td>{{ strtoupper($marriage->wife_name) }}</td>
-                    <td>{{ \Carbon\Carbon::parse($marriage->date_of_marriage)->format('M d, Y') }}</td>
-                    <td class="fw-bold">
-                        @php
-                            $days = \Carbon\Carbon::parse($marriage->date_of_registration)->diffInDays($marriage->date_of_marriage);
-                        @endphp
-                        {{ $days <= 30 ? 'ON-TIME' : 'DELAYED' }}
-                    </td>
+                    <td>{{ \Carbon\Carbon::parse($birth->date_of_registration)->format('M d, Y') }}</td>
+                    <td style="font-weight: bold;">{{ $birth->registration_number }}</td>
+                    <td>{{ $birth->full_name }}</td>
+                    <td>{{ $birth->sex }}</td>
+                    <td>{{ $birth->nationality }}</td>
+                    <td>{{ \Carbon\Carbon::parse($birth->date_of_birth)->format('M d, Y') }}</td>
+                    <td>{{ $birth->place_of_birth }}</td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7" style="text-align: center; padding: 20px; color: #777;">No records found matching your search.</td>
+                    <td colspan="8" style="text-align: center; color: #777; padding: 20px;">No records found matching your search.</td>
                 </tr>
             @endforelse
         </tbody>

@@ -1,6 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    /* Force text to appear as uppercase in the UI */
+    input[type="text"],
+    select,
+    textarea {
+        text-transform: uppercase;
+    }
+</style>
+
 <div class="container py-4">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
@@ -24,7 +33,8 @@
             <form action="{{ route('deaths.store') }}" method="POST" id="deathForm">
                 @csrf
 
-                <div class="row g-3">
+                <h5 class="text-primary border-bottom pb-2 mb-3">Administrative Details</h5>
+                <div class="row g-3 mb-4">
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Book No.</label>
                         <input type="text" name="book_number" class="form-control @error('book_number') is-invalid @enderror" value="{{ old('book_number') }}" required>
@@ -54,9 +64,10 @@
                         </div>
                         <input type="hidden" name="registration_number" id="reg_no_full" value="{{ old('registration_number') }}">
                     </div>
+                </div>
 
-                    <hr class="my-2">
-
+                <h5 class="text-primary border-bottom pb-2 mb-3">Deceased's Personal Details</h5>
+                <div class="row g-3 mb-4">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Full Name of Deceased</label>
                         <input type="text" name="full_name" class="form-control @error('full_name') is-invalid @enderror" value="{{ old('full_name') }}" required>
@@ -84,10 +95,10 @@
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Civil Status</label>
                         <select name="civil_status" class="form-select" required>
-                            <option value="Single" {{ old('civil_status') == 'Single' ? 'selected' : '' }}>Single</option>
-                            <option value="Married" {{ old('civil_status') == 'Married' ? 'selected' : '' }}>Married</option>
-                            <option value="Widowed" {{ old('civil_status') == 'Widowed' ? 'selected' : '' }}>Widowed</option>
-                            <option value="Separated" {{ old('civil_status') == 'Separated' ? 'selected' : '' }}>Separated</option>
+                            <option value="SINGLE" {{ old('civil_status') == 'SINGLE' ? 'selected' : '' }}>SINGLE</option>
+                            <option value="MARRIED" {{ old('civil_status') == 'MARRIED' ? 'selected' : '' }}>MARRIED</option>
+                            <option value="WIDOWED" {{ old('civil_status') == 'WIDOWED' ? 'selected' : '' }}>WIDOWED</option>
+                            <option value="SEPARATED" {{ old('civil_status') == 'SEPARATED' ? 'selected' : '' }}>SEPARATED</option>
                         </select>
                     </div>
 
@@ -95,9 +106,10 @@
                         <label class="form-label fw-bold">Occupation</label>
                         <input type="text" name="occupation" class="form-control @error('occupation') is-invalid @enderror" value="{{ old('occupation') }}" required>
                     </div>
+                </div>
 
-                    <hr class="my-2">
-
+                <h5 class="text-primary border-bottom pb-2 mb-3">Death Information</h5>
+                <div class="row g-3">
                     <div class="col-md-4">
                         <label class="form-label fw-bold">Date of Death</label>
                         <input type="date" name="date_of_death" id="date_of_death" class="form-control @error('date_of_death') is-invalid @enderror" value="{{ old('date_of_death') }}" required>
@@ -127,6 +139,14 @@
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('deathForm');
         const saveBtn = document.getElementById('save_btn');
+
+        // --- GLOBAL UPPERCASE LOGIC ---
+        form.querySelectorAll('input[type="text"], textarea').forEach(input => {
+            input.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+                checkFormCompletion();
+            });
+        });
 
         function checkFormCompletion() {
             const requiredInputs = form.querySelectorAll('[required]');
@@ -161,7 +181,7 @@
 
         regSequence.addEventListener('input', updateFullValue);
 
-        // Initial check for 'old' values
+        // Initial check
         checkFormCompletion();
     });
 </script>

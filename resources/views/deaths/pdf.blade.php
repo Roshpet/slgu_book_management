@@ -1,108 +1,137 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Death Records Report</title>
     <style>
+        /* PDF Page Setup - Legal standard, Landscape */
         @page {
             margin: 0.5in;
+            size: legal landscape;
         }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
+            font-family: 'Helvetica', Arial, sans-serif;
+            font-size: 11px;
+            line-height: 1.3;
+            color: #000;
+            position: relative;
         }
+
+        /* FIXED BACKGROUND WATERMARK - Perfectly Centered */
+        #watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 450px;
+            opacity: 0.1;
+            z-index: -1000;
+        }
+
         /* Header Styling */
-        .header {
+        .header-section {
             text-align: center;
             margin-bottom: 20px;
         }
-        .header h3 {
-            margin: 0;
-            text-transform: uppercase;
-            font-size: 18px;
-        }
-        .header p {
-            margin: 2px 0;
-            font-size: 14px;
-        }
-        .report-title {
+        .header-section p { margin: 2px 0; }
+        .office-title { font-weight: bold; font-size: 15px; text-transform: uppercase; }
+
+        /* Report Title */
+        .report-title-container {
             text-align: center;
-            font-weight: bold;
-            font-size: 12px;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
+            margin-bottom: 20px;
             border-top: 2px solid #000;
             padding-top: 10px;
         }
-        /* Watermark */
-        #watermark {
-            position: fixed;
-            top: 25%;
-            left: 25%;
-            width: 50%;
-            height: auto;
-            opacity: 0.1; /* Keeps it subtle so text is readable */
-            z-index: -1000;
+        .report-title-container p {
+            margin: 0;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 13px;
         }
+
         /* Table Styling */
-        table {
+        .data-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 11px;
-            margin-top: 10px;
         }
-        th {
+
+        .data-table th {
             background-color: #f2f2f2;
+            color: #000;
             font-weight: bold;
+            text-transform: uppercase;
+            font-size: 10px;
             text-align: left;
-            border: 1px solid #ccc;
-            padding: 8px;
+            padding: 6px;
+            border: 1px solid #ddd;
         }
-        td {
-            border: 1px solid #ccc;
-            padding: 8px;
+
+        .data-table td {
+            padding: 6px;
+            border: 1px solid #ddd;
+            text-transform: uppercase;
             vertical-align: middle;
         }
-        .text-center {
+
+        /* Specific width for row number */
+        .col-no {
+            width: 25px;
             text-align: center;
-        }
-        .fw-bold {
             font-weight: bold;
+        }
+
+        .data-table tr:nth-child(even) { background-color: #f9f9f9; }
+
+        .fw-bold { font-weight: bold; }
+        .text-center { text-align: center; }
+
+        .footer-note {
+            margin-top: 20px;
+            font-size: 10px;
+            text-align: center;
+            color: #555;
         }
     </style>
 </head>
 <body>
+
     <div id="watermark">
         <img src="{{ public_path('images/sogod_seal.jpg') }}" style="width: 100%;">
     </div>
 
-    <div class="header">
-        <h3>Republic of the Philippines</h3>
-        <p class="fw-bold">OFFICE OF THE MUNICIPAL CIVIL REGISTRAR</p>
+    <div class="header-section">
+        <p>REPUBLIC OF THE PHILIPPINES</p>
+        <p class="office-title">OFFICE OF THE MUNICIPAL CIVIL REGISTRAR</p>
         <p>Sogod, Southern Leyte</p>
     </div>
 
-    <div class="report-title">
-        DEATH RECORDS REPORT
+    <div class="report-title-container">
+        <p>DEATH RECORDS REPORT</p>
+        @if(request('search'))
+            <p style="font-size: 11px; font-weight: normal; text-transform: none; color: #555;">Filtered by: "{{ request('search') }}"</p>
+        @endif
     </div>
 
-    <table>
+    <table class="data-table">
         <thead>
             <tr>
-                <th width="12%">Reg. Date</th>
-                <th width="10%">Reg. No.</th>
-                <th width="20%">Full Name</th>
-                <th width="8%">Sex</th>
-                <th width="10%">Nationality</th>
-                <th width="5%">Age</th>
-                <th width="12%">Date of Death</th>
+                <th class="col-no">#</th>
+                <th style="width: 85px;">Reg. Date</th>
+                <th style="width: 80px;">Reg. No.</th>
+                <th>Full Name</th>
+                <th style="width: 50px;">Sex</th>
+                <th style="width: 80px;">Nationality</th>
+                <th style="width: 40px;">Age</th>
+                <th style="width: 85px;">Date of Death</th>
                 <th>Cause of Death</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($deaths as $death)
+            @forelse($deaths as $death)
                 <tr>
+                    <td class="col-no">{{ $loop->iteration }}</td>
                     <td>{{ \Carbon\Carbon::parse($death->date_of_registration)->format('M d, Y') }}</td>
                     <td class="fw-bold">{{ $death->registration_number }}</td>
                     <td>{{ strtoupper($death->full_name) }}</td>
@@ -112,8 +141,15 @@
                     <td>{{ \Carbon\Carbon::parse($death->date_of_death)->format('M d, Y') }}</td>
                     <td>{{ strtoupper($death->cause_of_death) }}</td>
                 </tr>
-            @endforeach
+            @empty
+                <tr>
+                    <td colspan="9" class="text-center" style="padding: 20px; color: #777;">No records found matching your search.</td>
+                </tr>
+            @endforelse
         </tbody>
     </table>
+
+    <p class="footer-note">Generated on {{ now()->format('F d, Y @ h:i A') }}</p>
+
 </body>
 </html>
